@@ -67,6 +67,20 @@ pocketportal-connect status
 pocketportal-connect disconnect
 ```
 
+Updates are always user-triggered:
+
+```bash
+pocketportal-connect update
+```
+
+Connect downloads the latest GitHub Release, verifies its published SHA-256,
+and installs it as a new immutable user-local version. It never checks or
+updates silently in the background. Roll back to an installed version with:
+
+```bash
+pocketportal-connect rollback 0.1.0
+```
+
 ## Build and test
 
 ```bash

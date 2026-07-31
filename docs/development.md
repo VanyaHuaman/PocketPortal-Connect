@@ -26,6 +26,12 @@ Build a versioned user-facing archive with:
 Release tags matching `v*` build the archive on macOS, generate a SHA-256
 checksum, and publish both files to GitHub Releases.
 
+The package smoke test uses temporary home, installation, and command
+directories. It builds two local versions, installs twice to verify
+idempotency, simulates GitHub release metadata with local files, verifies the
+checksum-gated update, and rolls back to the original installed version. It
+does not modify the developer's PocketPortal configuration or ADB connection.
+
 ## Boundaries
 
 This repository owns:

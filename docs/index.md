@@ -35,6 +35,14 @@ Choose a device with the arrow keys, press **Enter**, and keep the terminal
 open while Android Studio uses the device. Press **Ctrl+C** to disconnect and
 return the device to USB mode on the server.
 
+Updates are explicit and checksum-verified:
+
+```bash
+pocketportal-connect update
+```
+
+There are no silent or background updates.
+
 !!! note
     The bridge has been validated from personal and managed work Macs,
     including a work Mac connected to its corporate VPN. Windows packaging and

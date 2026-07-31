@@ -81,3 +81,26 @@ From a separate terminal, the packaged command can inspect or end the session:
 pocketportal-connect status
 pocketportal-connect disconnect
 ```
+
+## Update and rollback
+
+Updates happen only when requested:
+
+```bash
+pocketportal-connect update
+```
+
+The command reads the latest GitHub Release, downloads its versioned macOS ZIP
+and checksum, verifies SHA-256, and runs the same user-local installer. Saved
+server settings, the public certificate, and the Keychain credential remain
+unchanged. Connect never checks for or installs updates silently in the
+background.
+
+Previously installed immutable versions remain available for explicit
+rollback:
+
+```bash
+pocketportal-connect rollback 0.1.0
+```
+
+Use `pocketportal-connect version` to see the active version.

@@ -24,6 +24,8 @@ cp "$project_dir/scripts/pocketportal-connect" "$package_dir/bin/pocketportal-co
 cp "$project_dir/scripts/connect-macos.sh" "$package_dir/lib/connect-macos.sh"
 cp "$project_dir/scripts/connect-device-picker.js" \
   "$package_dir/lib/connect-device-picker.js"
+cp "$project_dir/scripts/release-metadata.js" \
+  "$package_dir/lib/release-metadata.js"
 cp "$project_dir/scripts/install-macos.sh" "$package_dir/install.sh"
 printf '%s\n' "$version" >"$package_dir/VERSION"
 chmod +x \
