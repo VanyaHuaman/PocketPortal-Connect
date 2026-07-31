@@ -7,17 +7,13 @@ PocketPortal server available to Android Studio's normal local ADB daemon.
 [PocketPortal server docs](https://vanyahuaman.github.io/PocketPortal/){ .md-button }
 [View the source](https://github.com/VanyaHuaman/PocketPortal-Connect){ .md-button }
 
-<figure class="pp-product-shot">
-  <a href="assets/terminal-device-picker.png">
-    <img
-      src="assets/terminal-device-picker.png"
-      alt="PocketPortal Connect device picker showing Pixel 4 XL and Lenovo TB336FU online with battery and connection details"
-      width="2874"
-      height="1774"
-    >
-  </a>
-  <figcaption>Interactive device picker with arrow-key navigation and live device status.</figcaption>
-</figure>
+<div class="pp-product-shot" markdown>
+
+![PocketPortal Connect device picker showing Pixel 4 XL and Lenovo TB336FU online with battery and connection details](assets/terminal-device-picker.png)
+
+<p class="pp-caption">Interactive device picker with arrow-key navigation and live device status.</p>
+
+</div>
 
 ## One focused client
 
