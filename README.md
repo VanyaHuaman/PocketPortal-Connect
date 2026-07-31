@@ -19,6 +19,9 @@ forwarding.
 The PocketPortal server remains in
 [`VanyaHuaman/PocketPortal`](https://github.com/VanyaHuaman/PocketPortal).
 
+Documentation is published at
+[`vanyahuaman.github.io/PocketPortal-Connect`](https://vanyahuaman.github.io/PocketPortal-Connect/).
+
 ## First run on macOS
 
 Prerequisites:

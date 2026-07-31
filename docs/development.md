@@ -1,0 +1,46 @@
+# Development
+
+PocketPortal Connect is a Kotlin/JVM application with a dependency-free macOS
+launcher and a small JavaScript for Automation inventory parser.
+
+## Build and test
+
+```bash
+./gradlew clean build
+./gradlew installDist
+bash -n scripts/connect-macos.sh
+```
+
+The development distribution is written to:
+
+```text
+build/install/pocketportal-connect/
+```
+
+## Boundaries
+
+This repository owns:
+
+- Client connection lifecycle
+- Local ADB listener and discovery
+- Trust composition
+- macOS configuration and Keychain integration
+- Terminal interaction
+- Client packaging and releases
+
+The server repository owns device inventory, bridge authorization, physical
+ADB commands, TLS server configuration, and USB restoration.
+
+Protocol changes must follow the [bridge contract](bridge-contract.md).
+
+## Verification
+
+Routine CI builds and tests on macOS. Physical-device verification remains an
+explicit hardware test:
+
+1. Open a client session.
+2. Confirm `adb devices -l` reports the loopback device.
+3. Run a harmless device query.
+4. End the session with `Ctrl+C`.
+5. Confirm local ADB removes the endpoint.
+6. Confirm the server reports the physical USB serial again.
