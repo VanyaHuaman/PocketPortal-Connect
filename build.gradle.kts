@@ -9,7 +9,7 @@ group = "dev.pocketportal"
 version = providers.gradleProperty("pocketPortalConnectVersion").get()
 
 application {
-    applicationName = "pocketportal-connect"
+    applicationName = "pocketportal-connect-engine"
     mainClass.set("dev.pocketportal.connect.MainKt")
 }
 

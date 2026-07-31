@@ -8,14 +8,23 @@ launcher and a small JavaScript for Automation inventory parser.
 ```bash
 ./gradlew clean build
 ./gradlew installDist
-bash -n scripts/connect-macos.sh
+./scripts/test-macos-package.sh
 ```
 
 The development distribution is written to:
 
 ```text
-build/install/pocketportal-connect/
+build/install/pocketportal-connect-engine/
 ```
+
+Build a versioned user-facing archive with:
+
+```bash
+./scripts/build-macos-release.sh 0.1.0
+```
+
+Release tags matching `v*` build the archive on macOS, generate a SHA-256
+checksum, and publish both files to GitHub Releases.
 
 ## Boundaries
 

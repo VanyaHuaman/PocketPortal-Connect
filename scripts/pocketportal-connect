@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_path="${BASH_SOURCE[0]}"
+while [[ -L "$script_path" ]]; do
+  script_directory="$(cd "$(dirname "$script_path")" && pwd)"
+  script_target="$(readlink "$script_path")"
+  if [[ "$script_target" == /* ]]; then
+    script_path="$script_target"
+  else
+    script_path="$script_directory/$script_target"
+  fi
+done
+package_root="$(cd "$(dirname "$script_path")/.." && pwd)"
+launcher="$package_root/lib/connect-macos.sh"
+engine="$package_root/libexec/pocketportal-connect-engine/bin/pocketportal-connect-engine"
+device_picker="$package_root/lib/connect-device-picker.js"
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/pocketportal"
+client_config_file="$config_dir/connect-client.properties"
+client_pid_file="$config_dir/connect.pid"
+default_local_port=15556
+shutdown_wait_attempts=30
+shutdown_wait_seconds=0.1
+
+usage() {
+  cat <<EOF
+Usage:
+  pocketportal-connect connect [launcher options]
+  pocketportal-connect disconnect
+  pocketportal-connect status
+  pocketportal-connect version
+
+Run 'pocketportal-connect connect --help' for connection options.
+EOF
+}
+
+read_saved_setting() {
+  local setting_name="$1"
+  [[ -f "$client_config_file" ]] || return 0
+  sed -n "s/^${setting_name}=//p" "$client_config_file" | tail -n 1
+}
+
+find_adb() {
+  local candidate
+  local candidates=()
+  [[ -z "${POCKETPORTAL_CONNECT_ADB:-}" ]] ||
+    candidates+=("$POCKETPORTAL_CONNECT_ADB")
+  [[ -z "${ANDROID_SDK_ROOT:-}" ]] ||
+    candidates+=("$ANDROID_SDK_ROOT/platform-tools/adb")
+  [[ -z "${ANDROID_HOME:-}" ]] ||
+    candidates+=("$ANDROID_HOME/platform-tools/adb")
+  candidates+=(
+    "$HOME/Library/Android/sdk/platform-tools/adb"
+    "/Applications/Android Studio.app/Contents/sdk/platform-tools/adb"
+  )
+  if command -v adb >/dev/null 2>&1; then
+    candidates+=("$(command -v adb)")
+  fi
+  for candidate in "${candidates[@]}"; do
+    if [[ -x "$candidate" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
+
+active_pid() {
+  local pid
+  [[ -f "$client_pid_file" ]] || return 1
+  pid="$(sed -n '1p' "$client_pid_file")"
+  [[ "$pid" =~ ^[0-9]+$ ]] || return 1
+  kill -0 "$pid" 2>/dev/null || return 1
+  ps -p "$pid" -o command= 2>/dev/null |
+    grep -q "pocketportal-connect-engine" || return 1
+  printf '%s\n' "$pid"
+}
+
+disconnect_local_adb() {
+  local adb_path
+  local local_port
+  adb_path="$(find_adb || true)"
+  local_port="$(read_saved_setting localPort)"
+  [[ "$local_port" =~ ^[0-9]+$ ]] || local_port="$default_local_port"
+  [[ -z "$adb_path" ]] ||
+    "$adb_path" disconnect "127.0.0.1:$local_port" >/dev/null 2>&1 || true
+}
+
+command_name="${1:-connect}"
+if [[ $# -gt 0 ]]; then
+  shift
+fi
+
+case "$command_name" in
+  connect)
+    export POCKETPORTAL_CONNECT_ENGINE="$engine"
+    export POCKETPORTAL_CONNECT_DEVICE_PICKER="$device_picker"
+    exec "$launcher" "$@"
+    ;;
+  disconnect)
+    if pid="$(active_pid)"; then
+      kill -INT "$pid"
+      for ((attempt = 0; attempt < shutdown_wait_attempts; attempt++)); do
+        kill -0 "$pid" 2>/dev/null || break
+        sleep "$shutdown_wait_seconds"
+      done
+    fi
+    disconnect_local_adb
+    rm -f "$client_pid_file"
+    echo "PocketPortal Connect is disconnected."
+    ;;
+  status)
+    server="$(read_saved_setting server)"
+    if pid="$(active_pid)"; then
+      echo "PocketPortal Connect is connected."
+      echo "Process: $pid"
+    else
+      echo "PocketPortal Connect is disconnected."
+    fi
+    [[ -z "$server" ]] || echo "Server: $server"
+    ;;
+  version)
+    cat "$package_root/VERSION"
+    ;;
+  help|--help|-h)
+    usage
+    ;;
+  *)
+    echo "Unknown command: $command_name" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

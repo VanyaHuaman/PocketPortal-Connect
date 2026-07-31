@@ -9,18 +9,26 @@
   [configured PocketPortal server](https://vanyahuaman.github.io/PocketPortal/)
 - SSH access for the one-time credential bootstrap
 
-## Current source installation
+## Download and install
 
-Connect currently runs from a source checkout. A packaged macOS release is
-planned next; until it exists, cloning the repository and using the launcher is
-the supported installation path.
+Download the current macOS ZIP archive and its SHA-256 checksum from
+[PocketPortal Connect releases](https://github.com/VanyaHuaman/PocketPortal-Connect/releases).
 
 ```bash
-cd ~/Desktop
-git clone https://github.com/VanyaHuaman/PocketPortal-Connect.git
-cd PocketPortal-Connect
+unzip pocketportal-connect-VERSION-macos.zip
+cd pocketportal-connect-VERSION-macos
+./install.sh
+```
 
-./scripts/connect-macos.sh \
+The installer uses no administrator privileges. It installs the immutable
+release under `~/.local/share/pocketportal-connect` and links the command at
+`~/.local/bin/pocketportal-connect`. If `~/.local/bin` is not already on
+`PATH`, follow the installer's printed instruction.
+
+## First connection
+
+```bash
+pocketportal-connect connect \
   --server wss://POCKETPORTAL_HOST:8443 \
   --ssh-target USER@POCKETPORTAL_HOST
 ```
@@ -37,7 +45,7 @@ On its first run, the launcher:
 Later runs require no arguments:
 
 ```bash
-./scripts/connect-macos.sh
+pocketportal-connect connect
 ```
 
 ## Verify Android Studio connectivity
@@ -66,3 +74,10 @@ connected.
 Press **Ctrl+C** in the Connect terminal. The client removes the loopback ADB
 entry, closes the WSS session, and the server restores the physical device to
 USB mode.
+
+From a separate terminal, the packaged command can inspect or end the session:
+
+```bash
+pocketportal-connect status
+pocketportal-connect disconnect
+```

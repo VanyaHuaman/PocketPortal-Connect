@@ -2,11 +2,13 @@
 set -euo pipefail
 
 project_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-connect_binary="$project_dir/build/install/pocketportal-connect/bin/pocketportal-connect"
+connect_binary="${POCKETPORTAL_CONNECT_ENGINE:-$project_dir/build/install/pocketportal-connect-engine/bin/pocketportal-connect-engine}"
+device_picker="${POCKETPORTAL_CONNECT_DEVICE_PICKER:-$project_dir/scripts/connect-device-picker.js}"
 default_local_port=15556
 default_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/pocketportal"
 default_ca_file="$default_config_dir/pocketportal-ca.pem"
 client_config_file="$default_config_dir/connect-client.properties"
+client_pid_file="$default_config_dir/connect.pid"
 remote_ca_file=".config/pocketportal/tls/pocketportal-ca.pem"
 remote_environment_file=".config/pocketportal/pocketportal.env"
 token_variable_name="POCKETPORTAL_ADB_BRIDGE_TOKEN"
@@ -88,6 +90,7 @@ mkdir -p "$default_config_dir"
 {
   printf 'server=%s\n' "$server"
   printf 'sshTarget=%s\n' "$ssh_target"
+  printf 'localPort=%s\n' "$local_port"
 } >"$client_config_file"
 chmod 600 "$client_config_file"
 
@@ -117,9 +120,18 @@ find_adb() {
 }
 
 if [[ ! -x "$connect_binary" ]]; then
-  printf '%s●%s Building PocketPortal Connect...\n' "$color_lime" "$color_reset"
-  "$project_dir/gradlew" -p "$project_dir" installDist
+  if [[ -x "$project_dir/gradlew" ]]; then
+    printf '%s●%s Building PocketPortal Connect...\n' "$color_lime" "$color_reset"
+    "$project_dir/gradlew" -p "$project_dir" installDist
+  else
+    echo "PocketPortal Connect engine was not found at $connect_binary." >&2
+    exit 1
+  fi
 fi
+[[ -f "$device_picker" ]] || {
+  echo "PocketPortal Connect device picker was not found at $device_picker." >&2
+  exit 1
+}
 resolved_adb="$(find_adb)"
 
 mkdir -p "$(dirname "$ca_file")"
@@ -155,7 +167,7 @@ select_device() {
       devices+=("$selected")
     done < <(
       osascript -l JavaScript \
-        "$project_dir/scripts/connect-device-picker.js" \
+        "$device_picker" \
         "$inventory_file" \
         "$device_name"
     )
@@ -275,6 +287,7 @@ printf '%s●%s Connecting %s. Press Ctrl+C to disconnect.\n' \
   "$color_lime" "$color_reset" "$serial"
 
 export POCKETPORTAL_CONNECT_TOKEN="$token"
+printf '%s\n' "$$" >"$client_pid_file"
 exec "$connect_binary" \
   --server "$server" \
   --serial "$serial" \

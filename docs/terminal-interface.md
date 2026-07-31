@@ -34,7 +34,7 @@ PocketPortal inventory API.
 A readable normalized model name can bypass the picker:
 
 ```bash
-./scripts/connect-macos.sh --device pixel-4-xl
+pocketportal-connect connect --device pixel-4-xl
 ```
 
 The hardware serial remains the internal stable identifier. Advanced users can

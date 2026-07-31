@@ -20,5 +20,13 @@ jobs:
           cache: gradle
       - name: Verify JVM client
         run: ./gradlew build
-      - name: Verify macOS launcher syntax
-        run: bash -n scripts/connect-macos.sh
+      - name: Verify macOS scripts
+        run: |
+          bash -n \
+            scripts/connect-macos.sh \
+            scripts/pocketportal-connect \
+            scripts/install-macos.sh \
+            scripts/build-macos-release.sh \
+            scripts/test-macos-package.sh
+      - name: Verify macOS package
+        run: ./scripts/test-macos-package.sh

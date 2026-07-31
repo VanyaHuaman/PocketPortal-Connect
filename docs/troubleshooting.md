@@ -9,7 +9,7 @@ Android Studio, and `PATH`.
 An explicit path is also supported:
 
 ```bash
-./scripts/connect-macos.sh \
+pocketportal-connect connect \
   --adb "$HOME/Library/Android/sdk/platform-tools/adb"
 ```
 

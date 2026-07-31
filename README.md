@@ -22,7 +22,7 @@ The PocketPortal server remains in
 Documentation is published at
 [`vanyahuaman.github.io/PocketPortal-Connect`](https://vanyahuaman.github.io/PocketPortal-Connect/).
 
-## First run on macOS
+## Install on macOS
 
 Prerequisites:
 
@@ -31,25 +31,41 @@ Prerequisites:
 - Network access to the PocketPortal server
 - SSH access for the one-time certificate and credential bootstrap
 
-```bash
-git clone https://github.com/VanyaHuaman/PocketPortal-Connect.git
-cd PocketPortal-Connect
+Download the current macOS archive and checksum from
+[GitHub Releases](https://github.com/VanyaHuaman/PocketPortal-Connect/releases),
+then:
 
-./scripts/connect-macos.sh \
+```bash
+unzip pocketportal-connect-VERSION-macos.zip
+cd pocketportal-connect-VERSION-macos
+./install.sh
+
+pocketportal-connect connect \
   --server wss://192.168.0.151:8443 \
   --ssh-target vanya@192.168.0.151
 ```
 
-The launcher builds the client when needed, discovers ADB, installs the server
-certificate, stores the bridge credential in the login Keychain, remembers the
-server, and presents the device picker. Later runs need only:
+The user-local installer places immutable release files under
+`~/.local/share/pocketportal-connect` and links the command into
+`~/.local/bin`. It never requires `sudo`.
+
+Connect discovers ADB, installs the server certificate, stores the bridge
+credential in the login Keychain, remembers the server, and presents the
+device picker. Later runs need only:
 
 ```bash
-./scripts/connect-macos.sh
+pocketportal-connect connect
 ```
 
 Press `Ctrl+C` to disconnect the local ADB transport and restore the device to
 USB mode on the PocketPortal server.
+
+Inspect or end the current session from another terminal:
+
+```bash
+pocketportal-connect status
+pocketportal-connect disconnect
+```
 
 ## Build and test
 
@@ -61,7 +77,7 @@ USB mode on the PocketPortal server.
 The installed development executable is:
 
 ```text
-build/install/pocketportal-connect/bin/pocketportal-connect
+build/install/pocketportal-connect-engine/bin/pocketportal-connect-engine
 ```
 
 ## Direct CLI
@@ -71,7 +87,7 @@ The launcher is recommended. The engine can also be invoked directly:
 ```bash
 export POCKETPORTAL_CONNECT_TOKEN='token-with-at-least-32-characters'
 
-./build/install/pocketportal-connect/bin/pocketportal-connect \
+./build/install/pocketportal-connect-engine/bin/pocketportal-connect-engine \
   --server wss://POCKETPORTAL_HOST:8443 \
   --serial DEVICE_SERIAL \
   --adb /path/to/adb \
