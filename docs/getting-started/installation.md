@@ -5,7 +5,8 @@
 - macOS
 - Java 17 or newer
 - Android Studio or Android SDK Platform Tools
-- Network access to a configured PocketPortal server
+- Network access to a
+  [configured PocketPortal server](https://vanyahuaman.github.io/PocketPortal/)
 - SSH access for the one-time credential bootstrap
 
 ## Clone and launch

@@ -4,6 +4,7 @@ PocketPortal Connect securely makes a physical Android device attached to your
 PocketPortal server available to Android Studio's normal local ADB daemon.
 
 [Install and connect](getting-started/installation.md){ .md-button .md-button--primary }
+[PocketPortal server docs](https://vanyahuaman.github.io/PocketPortal/){ .md-button }
 [View the source](https://github.com/VanyaHuaman/PocketPortal-Connect){ .md-button }
 
 ## One focused client
