@@ -3,21 +3,17 @@
 The interactive launcher shows every online Android device returned by the
 PocketPortal inventory API.
 
-```text
-┌─ POCKETPORTAL CONNECT ──────────────────────────────────┐
-│  Server  https://pocketportal:8443          ● online    │
-├──────────────────────────────────────────────────────────┤
-│  › Pixel 4 XL                               ● ONLINE    │
-│    Google · Android 13 · phone                          │
-│    Battery 100% · full · screen on                      │
-│                                                          │
-│    TB336FU                                  ● ONLINE    │
-│    LENOVO · Android 16 · tablet                         │
-│    Battery 25% · charging · screen on                   │
-├──────────────────────────────────────────────────────────┤
-│  ↑/↓ select   Enter connect   R refresh   Q quit        │
-└──────────────────────────────────────────────────────────┘
-```
+<figure class="pp-product-shot">
+  <a href="../assets/terminal-device-picker.png">
+    <img
+      src="../assets/terminal-device-picker.png"
+      alt="PocketPortal Connect device picker showing Pixel 4 XL and Lenovo TB336FU online with battery and connection details"
+      width="2874"
+      height="1774"
+    >
+  </a>
+  <figcaption>Interactive device picker with arrow-key navigation and live device status.</figcaption>
+</figure>
 
 ## Controls
 
