@@ -36,7 +36,8 @@ Protocol changes must follow the [bridge contract](bridge-contract.md).
 ## Verification
 
 Routine CI builds and tests on macOS. Physical-device verification remains an
-explicit hardware test:
+explicit hardware test. The Pixel 4 XL path has passed from personal and
+managed work Macs, including clean teardown back to its USB serial:
 
 1. Open a client session.
 2. Confirm `adb devices -l` reports the loopback device.

@@ -25,7 +25,8 @@ shared ADB daemon, or arbitrary network forwarding.
 
 ## Daily workflow
 
-After one-time setup:
+The current source-based launcher is the supported macOS entry point. After
+one-time setup:
 
 ```bash
 ./scripts/connect-macos.sh
@@ -36,5 +37,7 @@ open while Android Studio uses the device. Press **Ctrl+C** to disconnect and
 return the device to USB mode on the server.
 
 !!! note
-    macOS is the first supported client. Windows packaging and a lightweight
+    The bridge has been validated from personal and managed work Macs,
+    including a work Mac connected to its corporate VPN. A packaged macOS
+    release is the next client milestone. Windows packaging and a lightweight
     native interface remain future client work.

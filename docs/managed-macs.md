@@ -19,6 +19,11 @@ login Keychain; it is not written into the repository or shell profile.
 If your company provides a certificate installation utility for Java and curl,
 run it before launching Connect.
 
+The current work-Mac validation remained connected to PocketPortal while the
+corporate VPN was active. That proves this specific network and VPN
+configuration works; other employers may enforce different routing, firewall,
+or device-access policies.
+
 ## Trust errors
 
 If the client reports a certificate path or trust failure:

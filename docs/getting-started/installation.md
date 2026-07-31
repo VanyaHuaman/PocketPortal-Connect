@@ -9,7 +9,11 @@
   [configured PocketPortal server](https://vanyahuaman.github.io/PocketPortal/)
 - SSH access for the one-time credential bootstrap
 
-## Clone and launch
+## Current source installation
+
+Connect currently runs from a source checkout. A packaged macOS release is
+planned next; until it exists, cloning the repository and using the launcher is
+the supported installation path.
 
 ```bash
 cd ~/Desktop
@@ -52,6 +56,10 @@ The selected device appears through a loopback endpoint similar to:
 
 Android Studio continues using its normal local ADB daemon and should display
 the same device in Running Devices.
+
+The first physical-device workflow was verified on a personal Mac. The same
+setup was then verified on a managed work Mac while its corporate VPN was
+connected.
 
 ## Disconnect safely
 

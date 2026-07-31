@@ -13,7 +13,7 @@ An explicit path is also supported:
   --adb "$HOME/Library/Android/sdk/platform-tools/adb"
 ```
 
-## The dashboard works but discovery fails
+## The dashboard works but Connect inventory fails
 
 Connect uses HTTPS for inventory and WSS for the bridge. Confirm the configured
 URL includes the TLS port:
@@ -24,6 +24,9 @@ wss://POCKETPORTAL_HOST:8443
 
 Then check whether a managed TLS inspection certificate is trusted by both
 curl and Java.
+
+If a VPN is active, verify that it still routes the PocketPortal private-LAN
+address. The validated work-Mac setup does, but VPN policies differ.
 
 ## Android Studio does not show the device
 
