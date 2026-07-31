@@ -2,7 +2,7 @@
 set -euo pipefail
 
 project_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-connect_binary="$project_dir/connect/build/install/pocketportal-connect/bin/pocketportal-connect"
+connect_binary="$project_dir/build/install/pocketportal-connect/bin/pocketportal-connect"
 default_local_port=15556
 default_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/pocketportal"
 default_ca_file="$default_config_dir/pocketportal-ca.pem"
@@ -118,7 +118,7 @@ find_adb() {
 
 if [[ ! -x "$connect_binary" ]]; then
   printf '%s●%s Building PocketPortal Connect...\n' "$color_lime" "$color_reset"
-  "$project_dir/gradlew" -p "$project_dir" :connect:installDist
+  "$project_dir/gradlew" -p "$project_dir" installDist
 fi
 resolved_adb="$(find_adb)"
 

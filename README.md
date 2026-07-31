@@ -1,110 +1,86 @@
-# PocketPortal
+# PocketPortal Connect
 
-PocketPortal is a lean, self-hosted control plane for a physical mobile-device lab. The first release targets six Android devices connected to a Linux server.
+PocketPortal Connect makes an Android device attached to a PocketPortal server
+available to the normal local ADB daemon used by Android Studio. It opens one
+loopback-only ADB listener and carries only that device's ADB bytes over an
+authenticated WSS connection. It does not provide SSH or arbitrary network
+forwarding.
 
-## Prerequisites
+## Current support
+
+- macOS client
+- Android Studio's normal local ADB daemon
+- Automatic Android SDK/ADB discovery
+- Managed TLS inspection plus an optional PocketPortal PEM certificate
+- macOS Keychain credential storage
+- Interactive device picker with live device details
+- Explicit disconnect and server-side restoration to USB mode
+
+The PocketPortal server remains in
+[`VanyaHuaman/PocketPortal`](https://github.com/VanyaHuaman/PocketPortal).
+
+## First run on macOS
+
+Prerequisites:
 
 - Java 17 or newer
-- Node.js 20 or newer and npm for frontend development
-- ADB for Android discovery and observations
-- scrcpy for the later interactive-control phase
-
-## First setup
+- Android Studio or Android SDK Platform Tools
+- Network access to the PocketPortal server
+- SSH access for the one-time certificate and credential bootstrap
 
 ```bash
-./scripts/bootstrap.sh
+git clone https://github.com/VanyaHuaman/PocketPortal-Connect.git
+cd PocketPortal-Connect
+
+./scripts/connect-macos.sh \
+  --server wss://192.168.0.151:8443 \
+  --ssh-target vanya@192.168.0.151
 ```
 
-The bootstrap checks prerequisites, downloads pinned build dependencies through the Gradle wrapper, and runs all current tests.
-
-## Run locally
+The launcher builds the client when needed, discovers ADB, installs the server
+certificate, stores the bridge credential in the login Keychain, remembers the
+server, and presents the device picker. Later runs need only:
 
 ```bash
-./gradlew :app:run
+./scripts/connect-macos.sh
 ```
 
-Then open <http://localhost:8080> for the read-only device dashboard.
+Press `Ctrl+C` to disconnect the local ADB transport and restore the device to
+USB mode on the PocketPortal server.
 
-The dashboard refreshes <http://localhost:8080/api/devices> automatically and shows state, connection type, Android/SDK version, battery and charging status, screen state, observation time, and a bounded low-frequency screenshot for each online device. Its first safe action can wake an online device without toggling or unlocking it. If a detail query, screenshot, or action fails, discovery remains available with partial data and a recoverable error without exposing raw process output.
-
-Use a different port with:
+## Build and test
 
 ```bash
-POCKETPORTAL_PORT=9090 ./gradlew :app:run
+./gradlew test
+./gradlew installDist
 ```
 
-Runtime defaults live in [`config/pocketportal.properties`](./config/pocketportal.properties) and are packaged with the application. Override the config path with `POCKETPORTAL_CONFIG`. Individual overrides currently include `POCKETPORTAL_HOST`, `POCKETPORTAL_PORT`, `POCKETPORTAL_ADB_PATH`, `POCKETPORTAL_ADB_TIMEOUT_MILLIS`, and `POCKETPORTAL_SCREENSHOT_MAXIMUM_BYTES`.
+The installed development executable is:
 
-On a Linux host with user systemd, build the distribution elsewhere and install it with:
+```text
+build/install/pocketportal-connect/bin/pocketportal-connect
+```
+
+## Direct CLI
+
+The launcher is recommended. The engine can also be invoked directly:
 
 ```bash
-./scripts/install-linux.sh install \
-  --archive pocketportal-<version>.tar \
-  --version <version>
+export POCKETPORTAL_CONNECT_TOKEN='token-with-at-least-32-characters'
+
+./build/install/pocketportal-connect/bin/pocketportal-connect \
+  --server wss://POCKETPORTAL_HOST:8443 \
+  --serial DEVICE_SERIAL \
+  --adb /path/to/adb \
+  --ca-certificate /path/to/pocketportal-ca.pem
 ```
 
-The installer preserves configuration, activates an immutable versioned release, verifies both API endpoints, and automatically restores the previous release if health checks fail. Run `~/.local/bin/pocketportal doctor` for host diagnostics. See the [Linux runtime guide](./docs/operations/linux-runtime.md) for prerequisites, upgrades, and rollback.
+See [the bridge contract](docs/bridge-contract.md) for the security and
+compatibility boundary.
 
-The optional limited Android Studio bridge uses a separate
-`pocketportal-connect` distribution. It requires HTTPS/WSS for non-loopback
-connections and supports both the normal Java trust store and an additional
-PEM CA bundle for managed computers with TLS inspection.
+## Project boundaries
 
-## Verify changes
-
-```bash
-./scripts/verify.sh
-```
-
-## Clean-room installation test
-
-With an existing Podman machine running:
-
-```bash
-./testing/clean-room/run.sh
-```
-
-This builds PocketPortal in a fresh Linux JDK image using the normal bootstrap, creates the application distribution, starts it as a non-root user in a smaller JRE image, verifies readiness, and confirms that an intentionally absent ADB executable produces a typed service-unavailable response without preventing startup. The temporary test container is removed automatically.
-
-Clean-room settings live in [`testing/clean-room/clean-room.env`](./testing/clean-room/clean-room.env). This harness validates portable application installation; it does not replace Linux-host testing for systemd, udev, USB, ADB, scrcpy, or physical devices.
-
-Minimal Debian and Fedora compatibility containers verify package-manager guidance and the complete deterministic installer lifecycle: install, idempotent reinstall, upgrade, health-gated activation, automatic failure recovery, and rollback.
-
-```bash
-./testing/linux-compatibility/run.sh
-```
-
-## Documentation site
-
-Build the MkDocs Material site with:
-
-```bash
-./scripts/docs.sh build
-```
-
-Preview it locally with:
-
-```bash
-./scripts/docs.sh serve
-```
-
-The script creates an isolated `.venv-docs` environment and installs the pinned documentation dependency. GitHub Actions builds the site strictly for pull requests and deploys it to GitHub Pages after documentation changes reach `main`.
-
-## Structure
-
-- `domain`: framework-free business models and rules
-- `application`: use cases and external-system ports
-- `infrastructure`: adapters for clocks and, later, ADB, SQLite, and processes
-- `web`: Ktor transport and API models
-- `app`: composition root and executable service
-- `connect`: loopback-only Android Studio bridge CLI
-- `frontend`: React application, added with the first dashboard feature
-- `testing/clean-room`: Podman-based fresh-Linux installation smoke test
-- `testing/linux-compatibility`: Debian- and Fedora-family installer contract tests
-- `docs`: public MkDocs Material documentation
-- `deploy/linux`: distribution-neutral configuration and user-systemd service templates
-- `scripts/install-linux.sh`: resumable Linux install, upgrade, health check, and rollback
-
-PocketPortal is a modular monolith. Capabilities move into separate projects only when a concrete host, trust, runtime, lifecycle, scaling, or reuse boundary requires it.
-
-See [`PocketPortal-Plan.md`](./PocketPortal-Plan.md) for the roadmap and [`AI_HANDOFF.md`](./AI_HANDOFF.md) for continuation context.
+This repository owns client-side connection lifecycle, ADB discovery, local
+configuration, Keychain integration, terminal interaction, and future client
+packaging. The PocketPortal repository owns device inventory, authorization,
+TLS server setup, the server-side bridge, and physical-device restoration.

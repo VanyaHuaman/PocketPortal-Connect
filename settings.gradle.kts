@@ -12,13 +12,4 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "pocketportal"
-
-include(
-    "app",
-    "application",
-    "connect",
-    "domain",
-    "infrastructure",
-    "web",
-)
+rootProject.name = "pocketportal-connect"

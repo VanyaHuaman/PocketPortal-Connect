@@ -1,9 +1,0 @@
-FROM debian:13-slim
-
-WORKDIR /workspace
-COPY deploy/linux/ deploy/linux/
-COPY scripts/install-linux.sh scripts/install-linux.sh
-COPY testing/linux-compatibility/ testing/linux-compatibility/
-
-RUN ./testing/linux-compatibility/verify-family.sh Debian-family
-RUN ./testing/linux-compatibility/verify-lifecycle.sh
